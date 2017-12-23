@@ -65,17 +65,29 @@ public class HttpServer2 {
         private void readInputHeaders() throws Throwable {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String s;
+            StringBuilder sb = new StringBuilder();
             while (true) {
                 s = br.readLine();
+                System.out.println(s);
+                sb.append(s);
                 if (s == null || s.trim().length() == 0) {
                     break;
                 }
             }
-            String[] line = s.split(" ");
+            String[] line = sb.toString().split(" ");
+            System.out.println("line[0] - " + line[0]);
+            System.out.println("line[1] - " + line[1]);
 
-            if (line[0].equals("GET")){
-                htmlFileGenerator = new HTMLFileGenerator(line);
-                htmlFileGenerator.generate();
+            if (line[1].equals("/") && line[0].equals("GET")) {
+                writeResponse("HTTP/1.1 200 OK\r\n");
+                writeResponse("Content-Type: text/html; charset=UTF-8\r\n\r\n");
+                htmlFileGenerator = new HTMLFileGenerator(line, false);
+                writeResponse(htmlFileGenerator.generate());
+            } else if (line[0].equals("GET")) {
+                writeResponse("HTTP/1.1 200 OK\r\n");
+                writeResponse("Content-Type: text/html; charset=UTF-8\r\n\r\n");
+                htmlFileGenerator = new HTMLFileGenerator(line, true);
+                writeResponse(htmlFileGenerator.generate());
             } else if (line[0].equals("HEAD")){
                 System.out.println("ПОКА НЕ РЕАЛИЗОВАНО! xD");
             } else {

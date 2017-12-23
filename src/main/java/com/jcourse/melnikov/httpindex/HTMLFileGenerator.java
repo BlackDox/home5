@@ -7,40 +7,49 @@ import java.util.Comparator;
 
 public class HTMLFileGenerator {
     String[] args;
+    boolean flag;
 
-    public HTMLFileGenerator(String[] line) {
+    public HTMLFileGenerator(String[] line, boolean flag) {
         args = line;
+        this.flag = flag;
     }
 
-    public void generate(){
+    public String generate(){
 
     String output = "";
         if (args.length < 1) {
         System.out.println("Не указана директория");
-        return;
+        return "args.length < 1";
     }
 
-    File folder = new File(args[1]);
+        File folder;
+        if (flag==false) {
+            folder = new File("C:\\Users\\nout-hp\\Desktop\\Учеба Артём\\home5\\home5");//args[1]
 //    HTMLFileGenerator htmlFileGenerator = new HTMLFileGenerator();
+        } else {
+
+            folder = new File("C:\\Users\\nout-hp\\Desktop\\Учеба Артём\\home5\\home5"+args[1].replace("/", "\\"));
+        }
 
         try {
-        output = this.generateHTML(folder);
-        System.out.println(output);
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+            output = this.generateHTML(folder);
+//        System.out.println(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         try (Writer out = new OutputStreamWriter(new FileOutputStream("index.html"), "utf8")) {
 
-        if (output.length() > 0) {
-            out.write(output);
+            if (output.length() > 0) {
+                out.write(output);
+            }
+
+
+        } catch (IOException e) {
+            System.out.println("Не могу сохранить файл");
         }
-
-
-    } catch (IOException e) {
-        System.out.println("Не могу сохранить файл");
+        return output;
     }
-}
 
     private String generateHTML(File folder) throws IOException {
         StringBuilder htmlPage = new StringBuilder();
@@ -54,7 +63,7 @@ public class HTMLFileGenerator {
         htmlPage.append("<hr>\n");
         htmlPage.append("<table cellpadding=\"1\"> \n");
         htmlPage.append("<tr><td><h3>Имя</h3></td><td><h3>Размер</h3></td><td><h3>Последнее изменение</h3></td></tr>\n");
-        htmlPage.append("<tr><td>" + "<a href=" + '"').append("..").append('"').append(">...</a></td><td></td><td></td></tr>\n");
+        htmlPage.append("<tr><td>" + "<a href=\"").append("..").append('"').append(">...</a></td><td></td><td></td></tr>\n");
 
         File[] files = folder.listFiles();
 
@@ -79,7 +88,7 @@ public class HTMLFileGenerator {
         if (files != null) {
             for (File file : files) {
 
-                htmlPage.append("<tr><td><a href=" + '"').append(file.getName()).append('"').append(">").append(file.getName()).append("</a></td>");
+                htmlPage.append("<tr><td><a href=\"").append(file.getName()).append(file.isDirectory()?"/":"").append('"').append(">").append(file.getName()).append("</a></td>");
                 htmlPage.append("<td>");
                 if (file.isFile()) {
                     htmlPage.append(file.length()).append(" Byte");
