@@ -87,11 +87,11 @@ public class HTMLFileGenerator {
 
         if (files != null) {
             for (File file : files) {
-
                 htmlPage.append("<tr><td><a href=\"").append(file.getName()).append(file.isDirectory()?"/":"").append('"').append(">").append(file.getName()).append("</a></td>");
                 htmlPage.append("<td>");
                 if (file.isFile()) {
                     htmlPage.append(file.length()).append(" Byte");
+
                 }
                 htmlPage.append("</td>");
                 htmlPage.append("<td>").append(new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(file.lastModified())).append("</td></tr>\n");

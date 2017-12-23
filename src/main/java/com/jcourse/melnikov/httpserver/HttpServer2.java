@@ -2,12 +2,12 @@ package com.jcourse.melnikov.httpserver;
 
 import com.jcourse.melnikov.httpindex.HTMLFileGenerator;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import javax.activation.MimetypesFileTypeMap;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by BlackDox on 21.12.2017.
@@ -77,8 +77,31 @@ public class HttpServer2 {
             String[] line = sb.toString().split(" ");
             System.out.println("line[0] - " + line[0]);
             System.out.println("line[1] - " + line[1]);
+            char[] line1 = line[1].toCharArray();
 
-            if (line[1].equals("/") && line[0].equals("GET")) {
+            if (line1[line1.length-1]!='/' && line[0].equals("GET")){
+                System.out.println("*****Это файл*****");
+                String fileName = line[1].substring(1);
+                MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
+                File file = new File(fileName);
+                String mimeType = mimeTypesMap.getContentType(file);
+                InputStream inputStream = new FileInputStream(file);
+                InputStreamReader reader = new InputStreamReader(new BufferedInputStream(inputStream), "UTF-8");
+
+                writeResponse("HTTP/1.1 200 OK\r\n");
+                writeResponse("Content-Type: " + mimeType+"; charset=cp-1251\r\n" + " Content-Length: " + file.length() + "\r\n\r\n");
+
+                os.write(Files.readAllBytes(Paths.get(fileName)));
+                os.flush();
+//                int mybyte;
+//                StringBuilder sb2 = new StringBuilder();
+//            while ((mybyte = reader.read()) != -1) {
+//                sb2.append(String.valueOf((char) mybyte));
+////                System.out.println("* "+ sb2);
+//            }
+//            writeResponse(sb2.toString());
+
+            } else if (line[1].equals("/") && line[0].equals("GET")) {
                 writeResponse("HTTP/1.1 200 OK\r\n");
                 writeResponse("Content-Type: text/html; charset=UTF-8\r\n\r\n");
                 htmlFileGenerator = new HTMLFileGenerator(line, false);
